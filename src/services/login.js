@@ -1,13 +1,14 @@
 const db = require('../configs/pg')
 const jwt = require('jsonwebtoken')
 const cript = require('../utils/salt')
+const fs = require('fs')
 
 const sql_get = 
-`select user.username,
-        user.salt, 
-        user.password
-   from user
-  where user.username = $1 `
+`select users.username,
+        users.salt, 
+        users.password
+   from users
+  where users.username = $1 `
 
 const login = async(params) => {
     const{user, pass} = params
@@ -18,7 +19,8 @@ const login = async(params) => {
         const password = result.rows[0].password
         if (cript.comparePassword(password, salt, pass)){
             let perfilAcesso = result.rows[0].username
-            let token = jwt.sign({perfilAcesso}, process.env.PRIVATE_AUTH, {algorithm: 'RS256', expiresIn: '7d'})
+            const privateKey = fs.readFileSync("./src/private/private_key.pem");
+            let token = jwt.sign({perfilAcesso},privateKey, {algorithm: 'RS256', expiresIn: '7d'})
             return {
                 status: 'Logado com sucesso!',
                 user: result.rows[0].username,
