@@ -1,0 +1,21 @@
+version: '3'
+services:
+  horus:
+    image: horus
+    container_name: horus
+    ports: 
+      - "3000:3000"
+    depends_on:
+      - horusdb
+  horusdb:
+    image: horusdb
+    container_name: horusdb
+    environment:
+      ENV POSTGRES_USER: admin
+      ENV POSTGRES_PASSWORD: 123456
+      ENV POSTGRES_DB: horus
+    ports:
+      - "5432:5432"
+
+
+
